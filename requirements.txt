@@ -1,0 +1,13 @@
+lxml
+numpy
+dotenv
+requests
+beautifulsoup4
+sentence-transformers
+
+# RAG:
+langchain
+langchain-community
+langchain-openai
+# Don't wanna rebuild the gpu version, cpu is fast enough
+faiss-cpu
