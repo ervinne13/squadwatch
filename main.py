@@ -1,7 +1,7 @@
 import os
 import json
 from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 def get_latest_snapshot(base_dir="data/squads"):
     snapshots = [d for d in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, d))]
@@ -22,20 +22,22 @@ def load_squads(snapshot_dir):
 
 def squad_to_docs(team, data):
     docs = []
-    for player in data.get("players", []):
-        text = f"""
-        Player: {player.get('name')}
-        Team: {team}
-        Position: {player.get('position')}
-        Nationality: {player.get('nationality')}
-        Age: {player.get('age')}
-        Contract Until: {player.get('contract_until')}
-        """
-        docs.append(text.strip())
+    squad = data.get("squad", {})
+    for group, players in squad.items():
+        for player in players:
+            text = f"""
+            Player: {player.get('name')}
+            Team: {team}
+            Position: {player.get('position')}
+            Group: {group}
+            Age: {player.get('age')}
+            Contract Until: {player.get('contract_until')}
+            """
+            docs.append(text.strip())
     return docs
 
 def index_squads(squads, index_path="data/index/faiss_index"):
-    embeddings = OpenAIEmbeddings()
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     all_docs = []
     for team, data in squads.items():
         all_docs.extend(squad_to_docs(team, data))
