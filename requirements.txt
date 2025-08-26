@@ -13,3 +13,4 @@ langchain-openai
 faiss-cpu
 torch
 transformers
+feedparser
